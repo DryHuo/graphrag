@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Microsoft Corporation.
+# Copyright (c) 2024 Your Company Name
 # Licensed under the MIT License
 
 """A module containing load_storage method definition."""
@@ -11,11 +11,13 @@ from graphrag.config import StorageType
 from graphrag.index.config.storage import (
     PipelineBlobStorageConfig,
     PipelineFileStorageConfig,
+    PipelineGCSStorageConfig,
     PipelineStorageConfig,
 )
 
 from .blob_pipeline_storage import create_blob_storage
 from .file_pipeline_storage import create_file_storage
+from .gcs_pipeline_storage import create_gcs_storage
 from .memory_pipeline_storage import create_memory_storage
 
 
@@ -35,6 +37,13 @@ def load_storage(config: PipelineStorageConfig):
         case StorageType.file:
             config = cast(PipelineFileStorageConfig, config)
             return create_file_storage(config.base_dir)
+        case StorageType.gcs:
+            config = cast(PipelineGCSStorageConfig, config)
+            return create_gcs_storage(
+                config.bucket_name,
+                config.base_dir,
+                config.credentials_path,
+            )
         case _:
             msg = f"Unknown storage type: {config.type}"
             raise ValueError(msg)

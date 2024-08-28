@@ -1,7 +1,7 @@
 # Copyright (c) 2024 Microsoft Corporation.
 # Licensed under the MIT License
 
-"""A module containing 'PipelineStorageConfig', 'PipelineFileStorageConfig' and 'PipelineMemoryStorageConfig' models."""
+"""A module containing 'PipelineStorageConfig', 'PipelineFileStorageConfig', 'PipelineMemoryStorageConfig', 'PipelineBlobStorageConfig', and 'PipelineGCSStorageConfig' models."""
 
 from __future__ import annotations
 
@@ -67,6 +67,31 @@ class PipelineBlobStorageConfig(PipelineStorageConfig[Literal[StorageType.blob]]
     """The storage account blob url."""
 
 
+class PipelineGCSStorageConfig(PipelineStorageConfig[Literal[StorageType.gcs]]):
+    """Represents the Google Cloud Storage configuration for the pipeline."""
+
+    type: Literal[StorageType.gcs] = StorageType.gcs
+    """The type of storage."""
+
+    bucket_name: str = pydantic_Field(
+        description="The GCS bucket name for storage", default=None
+    )
+    """The GCS bucket name for storage."""
+
+    base_dir: str | None = pydantic_Field(
+        description="The base directory for the storage.", default=None
+    )
+    """The base directory for the storage."""
+
+    credentials_path: str | None = pydantic_Field(
+        description="The path to the GCS credentials file.", default=None
+    )
+    """The path to the GCS credentials file."""
+
+
 PipelineStorageConfigTypes = (
-    PipelineFileStorageConfig | PipelineMemoryStorageConfig | PipelineBlobStorageConfig
+    PipelineFileStorageConfig
+    | PipelineMemoryStorageConfig
+    | PipelineBlobStorageConfig
+    | PipelineGCSStorageConfig
 )

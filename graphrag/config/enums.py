@@ -60,6 +60,8 @@ class StorageType(str, Enum):
     """The memory storage type."""
     blob = "blob"
     """The blob storage type."""
+    gcs = "gcs"
+    """The Google Cloud Storage storage type."""
 
     def __repr__(self):
         """Get a string representation."""

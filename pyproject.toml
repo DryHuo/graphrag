@@ -94,6 +94,7 @@ azure-identity = "^1.17.1"
 json-repair = "^0.26.0"
 
 future = "^1.0.0"
+google-cloud-storage = "^2.18.2"
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.6.0"
 ipykernel = "^6.29.4"
