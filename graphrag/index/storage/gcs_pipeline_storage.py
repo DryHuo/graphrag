@@ -47,11 +47,12 @@ class GCSPipelineStorage(PipelineStorage):
                 "private_key_id": os.environ['GCS_PRIVATE_KEY_ID'],
                 "private_key": os.environ['GCS_PRIVATE_KEY'].replace('\\n', '\n'),
                 "client_email": os.environ['GCS_CLIENT_EMAIL'],
-                "client_id": "",
+                "client_id": os.environ['GCS_CLIENT_ID'],
                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                 "token_uri": "https://oauth2.googleapis.com/token",
                 "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-                "client_x509_cert_url": f"https://www.googleapis.com/robot/v1/metadata/x509/{os.environ['GCS_CLIENT_EMAIL']}"
+                "client_x509_cert_url": f"https://www.googleapis.com/robot/v1/metadata/x509/{os.environ['GCS_CLIENT_EMAIL']}",
+                "universe_domain": "googleapis.com"
             }
             credentials = service_account.Credentials.from_service_account_info(credentials_dict)
             self._client = storage.Client(credentials=credentials, project=os.environ['GCS_PROJECT_ID'])
