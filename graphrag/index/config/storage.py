@@ -83,11 +83,6 @@ class PipelineGCSStorageConfig(PipelineStorageConfig[Literal[StorageType.gcs]]):
     )
     """The base directory for the storage."""
 
-    credentials_path: str | None = pydantic_Field(
-        description="The path to the GCS credentials file.", default=None
-    )
-    """The path to the GCS credentials file."""
-
 
 PipelineStorageConfigTypes = (
     PipelineFileStorageConfig

@@ -4,6 +4,7 @@
 """Google Cloud Storage implementation of PipelineStorage."""
 
 import logging
+import os
 import re
 from collections.abc import Iterator
 from pathlib import Path
@@ -33,16 +34,29 @@ class GCSPipelineStorage(PipelineStorage):
         bucket_name: str,
         encoding: str | None = None,
         path_prefix: str | None = None,
-        credentials_path: str | None = None,
     ):
         """Create a new GCSStorage instance."""
-        if credentials_path:
-            credentials = service_account.Credentials.from_service_account_file(
-                credentials_path
-            )
-            self._client = storage.Client(credentials=credentials)
-        else:
+        # Check for GCS credentials in environment variables
+        if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
             self._client = storage.Client()
+        elif all(key in os.environ for key in ['GCS_PROJECT_ID', 'GCS_PRIVATE_KEY_ID', 'GCS_PRIVATE_KEY', 'GCS_CLIENT_EMAIL']):
+            # Create credentials from environment variables
+            credentials_dict = {
+                "type": "service_account",
+                "project_id": os.environ['GCS_PROJECT_ID'],
+                "private_key_id": os.environ['GCS_PRIVATE_KEY_ID'],
+                "private_key": os.environ['GCS_PRIVATE_KEY'].replace('\\n', '\n'),
+                "client_email": os.environ['GCS_CLIENT_EMAIL'],
+                "client_id": "",
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                "client_x509_cert_url": f"https://www.googleapis.com/robot/v1/metadata/x509/{os.environ['GCS_CLIENT_EMAIL']}"
+            }
+            credentials = service_account.Credentials.from_service_account_info(credentials_dict)
+            self._client = storage.Client(credentials=credentials, project=os.environ['GCS_PROJECT_ID'])
+        else:
+            raise ValueError("GCS credentials not found in environment variables")
 
         self._encoding = encoding or "utf-8"
         self._bucket_name = bucket_name
@@ -223,7 +237,6 @@ class GCSPipelineStorage(PipelineStorage):
 def create_gcs_storage(
     bucket_name: str,
     base_dir: str | None,
-    credentials_path: str | None = None,
 ) -> PipelineStorage:
     """Create a GCS based storage."""
     log.info("Creating GCS storage at %s", bucket_name)
@@ -233,7 +246,6 @@ def create_gcs_storage(
     return GCSPipelineStorage(
         bucket_name,
         path_prefix=base_dir,
-        credentials_path=credentials_path,
     )
 
 

@@ -42,7 +42,6 @@ def load_storage(config: PipelineStorageConfig):
             return create_gcs_storage(
                 config.bucket_name,
                 config.base_dir,
-                config.credentials_path,
             )
         case _:
             msg = f"Unknown storage type: {config.type}"
